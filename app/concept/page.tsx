@@ -19,7 +19,7 @@ export default function ConceptPage() {
             </div>
             <div className="order-1 lg:order-2 relative aspect-square rigid-border bg-foreground/10 overflow-hidden">
               <Image
-                src="/Users/jaraque/.gemini/antigravity/brain/fa69e38f-e088-4c40-b227-fa2b04470d1c/concept_hero_industrial_1775594651086.png"
+                src="/hero_bg.png"
                 alt="BESTIA Industrial Process"
                 fill
                 className="object-cover grayscale hover:grayscale-0 transition-all duration-700 hover:scale-105"
