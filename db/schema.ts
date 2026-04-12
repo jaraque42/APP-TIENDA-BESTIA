@@ -1,21 +1,21 @@
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
+import { pgTable, serial, text, timestamp, integer } from 'drizzle-orm/pg-core';
 
-export const users = sqliteTable('users', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
+export const users = pgTable('users', {
+  id: serial('id').primaryKey(),
   name: text('name').notNull(),
   email: text('email').notNull().unique(),
   password: text('password').notNull(),
-  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
-export const carts = sqliteTable('carts', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
+export const carts = pgTable('carts', {
+  id: serial('id').primaryKey(),
   userId: integer('user_id').references(() => users.id),
-  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
-export const cartItems = sqliteTable('cart_items', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
+export const cartItems = pgTable('cart_items', {
+  id: serial('id').primaryKey(),
   cartId: integer('cart_id').notNull().references(() => carts.id),
   productId: text('product_id').notNull(),
   quantity: integer('quantity').notNull().default(1),
