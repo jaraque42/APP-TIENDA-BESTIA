@@ -1,0 +1,100 @@
+{
+  "products": [
+    {
+      "id": "c01-05",
+      "Product_Name": "CHAQUETA ACTIVE DUCK",
+      "Technical_Specs": {
+        "Peso_Lona": "Lona Duck de 12 oz.",
+        "Tipo_Costura": "Costuras principales de triple puntada"
+      },
+      "Stock_Status": 8,
+      "GSM": 410,
+      "Reinforcement_Level": "INDUSTRIAL",
+      "category": "Serie C-01",
+      "image": "/images/products/jacket-active.jpg",
+      "availableSizes": ["S", "M", "L", "XL", "XXL"],
+      "availableColors": ["Negro", "Marrón", "Azul"],
+      "description": "Una chaqueta diseñada para el trabajo duro. Construida con lona Duck de alta resistencia y triple costura en los puntos de mayor tensión."
+    },
+    {
+      "id": "c01-06",
+      "Product_Name": "CHAQUETA DETROIT ARCHIVE",
+      "Technical_Specs": {
+        "Peso_Lona": "Lona de Algodón de 12 oz.",
+        "Tipo_Costura": "Costuras estructurales reforzadas"
+      },
+      "Stock_Status": 3,
+      "GSM": 410,
+      "Reinforcement_Level": "PREMIUM",
+      "category": "Serie C-01",
+      "image": "/images/products/jacket-detroit.jpg",
+      "availableSizes": ["S", "M", "L", "XL"],
+      "availableColors": ["Negro", "Gris", "Tan"],
+      "description": "Inspirada en el archivo industrial, esta chaqueta combina la durabilidad con un corte refinado para el uso diario en entornos exigentes."
+    },
+    {
+      "id": "c01-07",
+      "Product_Name": "CAMISETA POCKET NEGRA",
+      "Technical_Specs": {
+        "Peso_Lona": "Algodón de 6.75 oz.",
+        "Tipo_Costura": "Construcción de costura lateral"
+      },
+      "Stock_Status": 25,
+      "GSM": 230,
+      "Reinforcement_Level": "ESTÁNDAR",
+      "category": "Serie C-01",
+      "image": "/images/products/tshirt-black.jpg",
+      "availableSizes": ["S", "M", "L", "XL", "XXL"],
+      "availableColors": ["Negro"],
+      "description": "La camiseta fundamental. Algodón pesado con un bolsillo reforzado. Diseño minimalista para una máxima resistencia."
+    },
+    {
+      "id": "c01-08",
+      "Product_Name": "CAMISETA POCKET VERDE MUSGO",
+      "Technical_Specs": {
+        "Peso_Lona": "Algodón de 6.75 oz.",
+        "Tipo_Costura": "Construcción de costura lateral"
+      },
+      "Stock_Status": 4,
+      "GSM": 230,
+      "Reinforcement_Level": "ESTÁNDAR",
+      "category": "Serie C-01",
+      "image": "/images/products/tshirt-moss.jpg",
+      "availableSizes": ["S", "M", "L", "XL"],
+      "availableColors": ["Verde Musgo"],
+      "description": "Coloración industrial inspirada en el equipo técnico. Ideal para capas base en condiciones de trabajo pesado."
+    },
+    {
+      "id": "c01-09",
+      "Product_Name": "CAMISETA POCKET AZUL MARINO",
+      "Technical_Specs": {
+        "Peso_Lona": "Algodón de 6.75 oz.",
+        "Tipo_Costura": "Construcción de costura lateral"
+      },
+      "Stock_Status": 12,
+      "GSM": 230,
+      "Reinforcement_Level": "ESTÁNDAR",
+      "category": "Serie C-01",
+      "image": "/images/products/tshirt-navy.jpg",
+      "availableSizes": ["S", "M", "L", "XL", "XXL"],
+      "availableColors": ["Azul Marino"],
+      "description": "Acabado clásico industrial en azul marino. Algodón de alta densidad para una vida útil extendida."
+    },
+    {
+      "id": "c01-10",
+      "Product_Name": "VAQUEROS RUGGED FLEX",
+      "Technical_Specs": {
+        "Peso_Lona": "Denim de 12 oz.",
+        "Tipo_Costura": "Trabillas reforzadas"
+      },
+      "Stock_Status": 6,
+      "GSM": 410,
+      "Reinforcement_Level": "RESISTENCIA FLEX",
+      "category": "Serie C-01",
+      "image": "/images/products/jeans-rugged.jpg",
+      "availableSizes": ["30x32", "32x32", "34x32", "36x32"],
+      "availableColors": ["Denim Indigo", "Denim Negro"],
+      "description": "Movilidad sin comprometer la protección. Denim de 12 oz con tecnología Rugged Flex para máxima libertad de movimiento."
+    }
+  ]
+}

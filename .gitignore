@@ -42,6 +42,3 @@ next-env.d.ts
 
 # local database
 sqlite.db
-
-# stitch metadata
-stitch-catalog.json
