@@ -6,10 +6,15 @@ import CartItem from "@/components/cart/CartItem";
 import { useSession } from "next-auth/react";
 import { ArrowLeft, Trash2, ShoppingBag, Zap } from "lucide-react";
 import Footer from "@/components/Footer";
+import { useState } from "react";
+import MockCheckout from "@/components/cart/MockCheckout";
+import { useRouter } from "next/navigation";
 
 export default function CartPage() {
   const { data: session } = useSession();
   const { items, clearCart } = useCartStore();
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const router = useRouter();
 
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const shipping = subtotal > 0 ? 15.0 : 0; // Fixed industrial shipping
@@ -102,7 +107,10 @@ export default function CartPage() {
               </div>
 
               <div className="space-y-4">
-                <button className="w-full bg-industrial-yellow text-foreground py-6 font-anton text-2xl uppercase rigid-border border-foreground hover:bg-white transition-colors relative overflow-hidden group">
+                <button 
+                  onClick={() => setIsCheckoutOpen(true)}
+                  className="w-full bg-industrial-yellow text-foreground py-6 font-anton text-2xl uppercase rigid-border border-foreground hover:bg-white transition-colors relative overflow-hidden group"
+                >
                   <span className="relative z-10">CONFIRMAR PEDIDO</span>
                   <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
                 </button>
@@ -117,6 +125,19 @@ export default function CartPage() {
         </div>
       </main>
       <Footer />
+
+      {/* Mock Payment Gateway Overlay */}
+      <MockCheckout 
+        isOpen={isCheckoutOpen} 
+        onClose={() => {
+          setIsCheckoutOpen(false);
+          // If the cart is now empty (payment success), redirect to catalog
+          if (items.length === 0) {
+            router.push('/catalog');
+          }
+        }} 
+        total={total}
+      />
     </>
   );
 }

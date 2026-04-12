@@ -3,6 +3,8 @@ import { Anton, Roboto_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 import Header from "@/components/Header";
+import CookieBanner from "@/components/CookieBanner";
+import TestWarning from "@/components/TestWarning";
 
 const anton = Anton({
   weight: "400",
@@ -31,6 +33,8 @@ export default function RootLayout({
         <Providers>
           <Header />
           {children}
+          <CookieBanner />
+          <TestWarning />
         </Providers>
       </body>
     </html>
