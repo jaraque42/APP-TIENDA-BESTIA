@@ -1,6 +1,5 @@
 "use server";
 
-export { updateProfile, getUserProfile };
 
 import { db } from "@/db";
 import { users } from "@/db/schema";
