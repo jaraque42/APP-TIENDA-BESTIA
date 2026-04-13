@@ -22,3 +22,24 @@ export const cartItems = pgTable('cart_items', {
   productId: text('product_id').notNull(),
   quantity: integer('quantity').notNull().default(1),
 });
+
+export const orders = pgTable('orders', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id),
+  totalAmount: integer('total_amount').notNull(), // storing as cents or scaled
+  shippingAddress: text('shipping_address').notNull(),
+  status: text('status').notNull().default('processing'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const orderItems = pgTable('order_items', {
+  id: serial('id').primaryKey(),
+  orderId: integer('order_id').notNull().references(() => orders.id),
+  productId: text('product_id').notNull(),
+  name: text('name').notNull(),
+  price: integer('price').notNull(), // storing as scaled value
+  quantity: integer('quantity').notNull().default(1),
+  size: text('size'),
+  color: text('color'),
+});
+

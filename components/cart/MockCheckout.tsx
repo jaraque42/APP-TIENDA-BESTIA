@@ -1,8 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, CreditCard, Lock, ShieldCheck, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { X, CreditCard, Lock, ShieldCheck, Loader2, CheckCircle2, AlertCircle, MapPin } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
+import { getUserProfile } from "@/lib/actions/profile";
+import { createOrder } from "@/lib/actions/checkout";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
 
 interface MockCheckoutProps {
   isOpen: boolean;
@@ -11,29 +15,73 @@ interface MockCheckoutProps {
 }
 
 export default function MockCheckout({ isOpen, onClose, total }: MockCheckoutProps) {
-  const [step, setStep] = useState<"form" | "processing" | "success">("form");
+  const [step, setStep] = useState<"address" | "form" | "processing" | "success" | "error">("address");
   const [loadingText, setLoadingText] = useState("INICIALIZANDO PROTOCOLO DE PAGO...");
+  const [errorMsg, setErrorMsg] = useState("");
+  const [orderCode, setOrderCode] = useState("");
+  const [userProfile, setUserProfile] = useState<{address: string | null, fullName: string | null} | null>(null);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
+  
   const clearCart = useCartStore((state) => state.clearCart);
+  const items = useCartStore((state) => state.items);
+  const { data: session } = useSession();
 
-  const processPayment = () => {
+  useEffect(() => {
+    if (isOpen) {
+      if (!session) {
+        setStep("error");
+        setErrorMsg("ACCESO DENEGADO: SESIÓN NO INICIADA. PROCEDA A AUTENTICARSE.");
+        setIsLoadingProfile(false);
+        return;
+      }
+      setIsLoadingProfile(true);
+      getUserProfile()
+        .then(profile => {
+          if (!profile) {
+            setStep("error");
+            setErrorMsg("PERFIL NO ENCONTRADO.");
+          } else if (!profile.address) {
+            setStep("error");
+            setErrorMsg("DIRECCIÓN NO ENCONTRADA. POR FAVOR, ACTUALICE SU PERFIL.");
+          } else {
+            setUserProfile(profile);
+            setStep("address");
+          }
+        })
+        .catch(() => {
+          setStep("error");
+          setErrorMsg("ERROR AL CARGAR PERFIL.");
+        })
+        .finally(() => setIsLoadingProfile(false));
+    }
+  }, [isOpen, session]);
+
+  const processPayment = async () => {
     setStep("processing");
     
-    // Simulate industrial processing steps
-    const steps = [
-      { text: "CONECTANDO CON SERVIDOR CENTRAL DE SEGURIDAD...", delay: 800 },
-      { text: "VALIDANDO INTEGRIDAD DE LA TRANSACCIÓN...", delay: 1600 },
-      { text: "AUTORIZANDO TRANSFERENCIA DE CRÉDITOS...", delay: 2400 },
-      { text: "GENERANDO MANIFIESTO DE ENTREGA...", delay: 3200 },
-    ];
+    // Simulate industrial processing steps mixed with real API call
+    setLoadingText("CONECTANDO CON SERVIDOR CENTRAL DE SEGURIDAD...");
+    
+    try {
+      // Small simulation delay
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      setLoadingText("VALIDANDO INTEGRIDAD DE LA TRANSACCIÓN...");
+      
+      const result = await createOrder(items, total);
+      if (result.success) {
+        setOrderCode(result.orderId);
+      }
 
-    steps.forEach((s, i) => {
-      setTimeout(() => setLoadingText(s.text), s.delay);
-    });
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      setLoadingText("GENERANDO MANIFIESTO DE ENTREGA...");
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    setTimeout(() => {
       setStep("success");
       clearCart();
-    }, 4000);
+    } catch (err: any) {
+      setStep("error");
+      setErrorMsg(err.message || "ERROR DESCONOCIDO EN LA TRANSACCIÓN.");
+    }
   };
 
   if (!isOpen) return null;
@@ -53,7 +101,7 @@ export default function MockCheckout({ isOpen, onClose, total }: MockCheckoutPro
         <div className="h-1 bg-foreground/10 w-full overflow-hidden">
           <div 
             className={`h-full bg-industrial-yellow transition-all duration-500 ${
-              step === "form" ? "w-1/3" : step === "processing" ? "w-2/3" : "w-full"
+              (step === "address" || step === "error") ? "w-1/4" : step === "form" ? "w-2/4" : step === "processing" ? "w-3/4" : "w-full"
             }`}
           />
         </div>
@@ -64,10 +112,10 @@ export default function MockCheckout({ isOpen, onClose, total }: MockCheckoutPro
             <Lock size={18} className="text-industrial-yellow" />
             <h3 className="font-anton text-xl uppercase tracking-wider">Terminal de Pago Seguro</h3>
           </div>
-          {step === "form" && (
+          {["form", "address", "error"].includes(step) && (
             <button 
               onClick={onClose}
-              className="p-2 hover:bg-foreground/5 transition-colors absolute top-4 right-4"
+              className="p-2 hover:bg-foreground/5 transition-colors absolute top-4 right-4 z-10"
             >
               <X size={24} />
             </button>
@@ -75,7 +123,75 @@ export default function MockCheckout({ isOpen, onClose, total }: MockCheckoutPro
         </div>
 
         <div className="p-8">
-          {step === "form" && (
+          {isLoadingProfile && step === "address" && (
+            <div className="py-20 flex flex-col items-center justify-center animate-pulse">
+              <Loader2 className="animate-spin mb-4 text-industrial-yellow" size={40} />
+              <p className="font-mono text-sm uppercase">VERIFICANDO IDENTIDAD...</p>
+            </div>
+          )}
+
+          {!isLoadingProfile && step === "error" && (
+            <div className="py-12 flex flex-col items-center text-center animate-in slide-in-from-bottom-4 duration-500">
+              <AlertCircle size={64} className="text-red-500 mb-6" />
+              <h4 className="font-anton text-3xl uppercase mb-4 tracking-tighter text-red-500">TRANSACCIÓN DETENIDA</h4>
+              <p className="font-mono text-sm mb-8 uppercase text-red-500 bg-red-500/10 p-4 border border-red-500/50">
+                {errorMsg}
+              </p>
+              {!session ? (
+                <Link 
+                  href="/login"
+                  className="w-full bg-foreground text-background py-5 font-anton text-xl uppercase hover:bg-industrial-yellow hover:text-foreground transition-all rigid-border"
+                  onClick={onClose}
+                >
+                  AUTENTICARSE (LOGIN)
+                </Link>
+              ) : (
+                <Link 
+                  href="/profile"
+                  className="w-full bg-foreground text-background py-5 font-anton text-xl uppercase hover:bg-industrial-yellow hover:text-foreground transition-all rigid-border"
+                  onClick={onClose}
+                >
+                  ACTUALIZAR DATOS DE ENVÍO
+                </Link>
+              )}
+            </div>
+          )}
+
+          {!isLoadingProfile && step === "address" && userProfile?.address && (
+            <div className="animate-in slide-in-from-bottom-4 duration-500">
+              <div className="mb-6 flex items-center gap-3 border-b border-foreground/10 pb-4">
+                <MapPin className="text-industrial-yellow" size={24} />
+                <h4 className="font-anton text-2xl uppercase">CONFIRMAR DIRECCIÓN</h4>
+              </div>
+              
+              <div className="bg-foreground/5 p-6 rigid-border mb-6 border-foreground/20">
+                <p className="font-mono text-xs uppercase opacity-50 mb-2">DESTINATARIO:</p>
+                <p className="font-mono text-lg font-bold mb-4 uppercase">{userProfile.fullName || session?.user?.name}</p>
+                
+                <p className="font-mono text-xs uppercase opacity-50 mb-2">UBICACIÓN (MANIFIESTO DE ENTREGA):</p>
+                <p className="font-mono text-md uppercase leading-relaxed">{userProfile.address}</p>
+              </div>
+
+              <div className="flex justify-between items-center mb-8">
+                <Link 
+                  href="/profile" 
+                  onClick={onClose}
+                  className="font-mono text-xs uppercase underline hover:text-industrial-yellow transition-colors"
+                >
+                  MODIFICAR DIRECCIÓN
+                </Link>
+              </div>
+
+              <button 
+                onClick={() => setStep("form")}
+                className="w-full bg-foreground text-background py-6 font-anton text-2xl uppercase rigid-border border-foreground hover:bg-industrial-yellow hover:text-foreground transition-all flex items-center justify-center gap-3"
+              >
+                CONFIRMAR Y PROCEDER AL PAGO
+              </button>
+            </div>
+          )}
+
+          {!isLoadingProfile && step === "form" && (
             <div className="animate-in slide-in-from-bottom-4 duration-500">
               <div className="mb-8 flex justify-between items-end">
                 <div>
@@ -160,7 +276,7 @@ export default function MockCheckout({ isOpen, onClose, total }: MockCheckoutPro
               <h4 className="font-anton text-4xl uppercase mb-4 tracking-tighter">TRANSACCIÓN COMPLETADA</h4>
               <p className="font-mono text-sm opacity-60 mb-2 uppercase">ORDEN GENERADA CON ÉXITO</p>
               <div className="bg-foreground text-industrial-yellow p-4 px-8 font-mono text-xl font-bold mb-10 rigid-border">
-                BST-ORD-{Math.floor(100000 + Math.random() * 900000)}
+                {orderCode || `BST-ORD-${Math.floor(100000 + Math.random() * 900000)}`}
               </div>
               <button 
                 onClick={onClose}
