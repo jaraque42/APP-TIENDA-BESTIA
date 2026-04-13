@@ -37,9 +37,9 @@ export default function Header() {
 
           {session ? (
             <div className="flex items-center gap-4">
-              <span className="uppercase text-xs opacity-70">
+              <Link href="/profile" className="uppercase text-xs opacity-70 hover:text-industrial-yellow transition-colors cursor-pointer" title="Mi Perfil">
                 CLIENTE: {session.user?.name}
-              </span>
+              </Link>
               <button
                 onClick={() => signOut()}
                 className="hover:text-industrial-yellow p-2"
@@ -105,7 +105,13 @@ export default function Header() {
                 <>
                   <div className="flex flex-col py-1">
                     <span className="opacity-50">CLIENTE:</span>
-                    <span className="font-bold opacity-90">{session.user?.name}</span>
+                    <Link 
+                      href="/profile" 
+                      onClick={() => setIsMenuOpen(false)}
+                      className="font-bold opacity-90 text-industrial-yellow hover:opacity-100 transition-opacity"
+                    >
+                      {session.user?.name} (PERFIL)
+                    </Link>
                   </div>
                   <button
                     onClick={() => {
