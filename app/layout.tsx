@@ -20,6 +20,11 @@ const robotoMono = Roboto_Mono({
 export const metadata: Metadata = {
   title: "BESTIA | INGENIERÍA DE RESISTENCIA",
   description: "E-commerce industrial de alta gama. Crudo, pesado, indestructible.",
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({
